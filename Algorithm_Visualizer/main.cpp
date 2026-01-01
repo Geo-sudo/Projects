@@ -31,7 +31,7 @@ vector<int> randVec(int size){
     return vec;
 }
 
-void Bubbly(VisData& data){
+void bubblySort(VisData& data){
     int size= data.vec.size();
 
     for(int i=0; i<size-1; i++){
@@ -63,6 +63,31 @@ void Bubbly(VisData& data){
     data.activeIdx2=-1;
 }
 
+void selectionSort(VisData& data);
+
+void drawBubbly(VisData& data, const int dataSize, RenderWindow& window, const int windowWidth, const int windowHeight){
+    float barWidth = (float)windowWidth/(dataSize+2);
+            
+    for(int i=0; i<dataSize;i++){
+        float barHeight = data.vec[i]*5.0f;
+        RectangleShape bar(Vector2f(barWidth-2, barHeight));
+
+        bar.setPosition(Vector2f(barWidth*(i+1), windowHeight-barHeight));
+
+        if(i==data.activeIdx1){
+            bar.setFillColor(Color::Green);
+        }
+        else if(i==data.activeIdx2){
+            bar.setFillColor(Color::Red);
+        }
+        else{
+            bar.setFillColor(Color::White);
+        }
+
+        window.draw(bar);
+    }
+}
+
 int main(){
     const int dataSize=30;
     const int windowWidth=800, windowHeight=600;
@@ -71,7 +96,7 @@ int main(){
     data.vec = randVec(dataSize);
 
     RenderWindow window(VideoMode({windowWidth, windowHeight}), "Algorithm Visualizer");
-    thread sortingThread(Bubbly, ref(data));
+    thread sortingThread(bubblySort, ref(data));
 
     while(window.isOpen()){
         while(const optional event = window.pollEvent()){
@@ -82,30 +107,9 @@ int main(){
         }
 
         window.clear();
-
         {
             lock_guard<mutex> lock(data.mtx);
-            float barWidth = (float)windowWidth/dataSize; //Add a +2 in the denominator?
-            
-            for(int i=0; i<dataSize;i++){
-                float barHeight = data.vec[i]*5.0f;
-                RectangleShape bar(Vector2f(barWidth-2, barHeight));
-
-                bar.setPosition(Vector2f(barWidth*i, windowHeight-barHeight));
-
-                if(i==data.activeIdx1){
-                    bar.setFillColor(Color::Green);
-                }
-                else if(i==data.activeIdx2){
-                    bar.setFillColor(Color::Red);
-                }
-                else{
-                    bar.setFillColor(Color::White);
-                }
-
-                window.draw(bar);
-            }
-        
+            drawBubbly(data, dataSize, window, windowWidth, windowHeight);
         }
         window.display();
     }
