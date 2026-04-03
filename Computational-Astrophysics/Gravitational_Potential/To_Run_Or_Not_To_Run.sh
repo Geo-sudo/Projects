@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd build && \
+mkdir -p build &&\
+cd "$_" && \
 cmake .. && \
 make && \
 ./Gravitational_Potential
