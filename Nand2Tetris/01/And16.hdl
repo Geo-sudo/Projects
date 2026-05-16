@@ -1,0 +1,8 @@
+CHIP And16{
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    Nand16(a=a, b=b, out=nandab);
+    Not16(in=nandab, out=out);
+}
